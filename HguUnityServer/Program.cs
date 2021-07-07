@@ -4,6 +4,7 @@ using System.Linq;
 using System.Net;
 using System.Net.Sockets;
 using System.Threading.Tasks;
+using System.Runtime.InteropServices;
 
 namespace HguUnityServer
 {
@@ -20,12 +21,12 @@ namespace HguUnityServer
         static void Main(string[] args)
         {
             Console.WriteLine("HGU Unity Server Starting...");
+
             UdpClient udpServer = new UdpClient(20217);
-            udpServer.Client.IOControl(
-    (IOControlCode)SIO_UDP_CONNRESET,
-    new byte[] { 0, 0, 0, 0 },
-    null
-);
+            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+            {
+                udpServer.Client.IOControl((IOControlCode)SIO_UDP_CONNRESET, new byte[] { 0, 0, 0, 0 }, null);
+            }
 
             HashSet<IPEndPoint> endpointSet = new HashSet<IPEndPoint>();
             Dictionary<IPEndPoint, PlayerState> playerStateDict = new Dictionary<IPEndPoint, PlayerState>();
